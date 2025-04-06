@@ -7,8 +7,8 @@ A full-stack productivity app built with Node.js, Express, MongoDB, and Pug. Thi
 ---
 
 ## 🔗 Live Demo
-🚀 Hosted on: 
-🔧 GitHub Repo: 
+🚀 Hosted on: https://task-goal-tracking-app.onrender.com/ 
+🔧 GitHub Repo: https://github.com/00022128/Task-Goal-Tracking-App/tree/master#
 
 ---
 
@@ -46,6 +46,9 @@ A full-stack productivity app built with Node.js, Express, MongoDB, and Pug. Thi
 - **Other Tools:** Flash messages, Method-Override, Multer (for image upload), Express-Session
 
 ---
+
+## Note
+Please note this web site was hosted on free tier of "Render", which may affect the performance and slow response up to 50 seconds.
 
 ## 🚀 How to Run Locally
 
