@@ -3,24 +3,24 @@ const mongoose = require("mongoose")
 const UserSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true, // User's full name
+    required: true,
   },
   email: {
     type: String,
     required: true,
-    unique: true, // Email must be unique
+    unique: true,
   },
   password: {
     type: String,
-    required: true, // Hashed password
+    required: true,
   },
   avatar: {
     type: String,
-    default: "default-avatar.png", // Default avatar if none is uploaded
+    default: "default-avatar.png",
   },
   registerDate: {
     type: Date,
-    default: Date.now, // Auto-set registration timestamp
+    default: Date.now,
   },
   completedTasks: {
     type: Number,
@@ -40,7 +40,7 @@ const UserSchema = new mongoose.Schema({
   },
 })
 
-// Virtual field to calculate productivity as a percentage
+// Calculate productivity score (0-100)
 UserSchema.virtual("productivityScore").get(function () {
   if (this.totalTasks === 0 && this.totalGoals === 0) return 0
 
@@ -51,4 +51,5 @@ UserSchema.virtual("productivityScore").get(function () {
 })
 
 const User = mongoose.model("User", UserSchema)
+
 module.exports = User

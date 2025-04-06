@@ -3,42 +3,39 @@ const mongoose = require("mongoose")
 const TaskSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User", // Reference to the owner of the task
+    ref: "User",
     required: true,
   },
   title: {
     type: String,
-    required: true, // Task must have a title
+    required: true,
   },
   description: {
-    type: String, // Optional task description
+    type: String,
   },
   category: {
     type: String,
     required: true,
-    enum: ["physical", "study", "work", "hobby", "personal", "other"], // Predefined categories
+    enum: ["physical", "study", "work", "hobby", "personal", "other"],
   },
   type: {
     type: String,
     required: true,
-    enum: ["routine", "one-time"], // Defines task nature
+    enum: ["routine", "one-time"],
   },
-
-  // Routine task-specific fields
+  // For routine tasks
   routineDetails: {
     frequency: {
       type: String,
       enum: ["daily", "weekly", "monthly", null],
     },
-    time: String, // Preferred time of day
-    days: [String], // Days of the week (e.g., ["monday", "wednesday"])
+    time: String,
+    days: [String], // Array of days of the week
   },
-
-  // One-time task due date
+  // For one-time tasks
   dueDate: {
     type: Date,
   },
-
   completed: {
     type: Boolean,
     default: false,
@@ -46,7 +43,6 @@ const TaskSchema = new mongoose.Schema({
   completedDate: {
     type: Date,
   },
-
   createdAt: {
     type: Date,
     default: Date.now,
@@ -54,4 +50,5 @@ const TaskSchema = new mongoose.Schema({
 })
 
 const Task = mongoose.model("Task", TaskSchema)
+
 module.exports = Task
