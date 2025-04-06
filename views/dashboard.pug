@@ -1,0 +1,87 @@
+extends layout
+
+block content
+  .dashboard
+    .dashboard-header
+      h1 Welcome, #{user.name}
+      .productivity-score
+        .score-circle(class=`score-${Math.floor(user.productivityScore/10)*10}`)
+          span #{user.productivityScore}
+        p.score-label Productivity Score
+    
+    .dashboard-grid
+      .dashboard-card
+        h2 Today's Tasks
+        if todayTasks && todayTasks.length
+          ul.task-list
+            each task in todayTasks
+              li.task-item
+                .task-checkbox
+                  form(action=`/tasks/${task._id}/complete?_method=PATCH`, method="POST")
+                    input(type="checkbox", onChange="this.form.submit()", checked=task.completed)
+                .task-content
+                  h4.task-title= task.title
+                  if task.description
+                    p.task-description= task.description
+                  .task-meta
+                    span.task-category= task.category
+                    if task.type === 'one-time'
+                      span.task-due Due: #{new Date(task.dueDate).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                    else if task.routineDetails && task.routineDetails.time
+                      span.task-due Time: #{task.routineDetails.time}
+        else
+          p.empty-state No tasks for today. 
+            a(href="/tasks/add") Add a task?
+      
+      .dashboard-card
+        h2 Upcoming Tasks
+        if upcomingTasks && upcomingTasks.length
+          ul.task-list
+            each task in upcomingTasks
+              li.task-item
+                .task-content
+                  h4.task-title= task.title
+                  .task-meta
+                    span.task-category= task.category
+                    span.task-due Due: #{new Date(task.dueDate).toLocaleDateString()}
+        else
+          p.empty-state No upcoming tasks.
+      
+      .dashboard-card
+        h2 Active Goals
+        if activeGoals && activeGoals.length
+          ul.goal-list
+            each goal in activeGoals
+              li.goal-item
+                h4.goal-title= goal.title
+                if goal.type === 'task-based'
+                  .progress-bar
+                    - const taskCount = goal.taskBasedDetails.tasks.length
+                    - const completedCount = goal.taskBasedDetails.tasks.filter(task => task.completed).length
+                    - const progressPercent = taskCount > 0 ? Math.round((completedCount / taskCount) * 100) : 0
+                    .progress-fill(style=`width: ${progressPercent}%`)
+                    span.progress-text #{completedCount}/#{taskCount} tasks
+                if goal.type === 'task-based' && goal.taskBasedDetails.targetDate
+                  .goal-meta Target: #{new Date(goal.taskBasedDetails.targetDate).toLocaleDateString()}
+                else if goal.dueDate
+                  .goal-meta Due: #{new Date(goal.dueDate).toLocaleDateString()}
+        else
+          p.empty-state No active goals. 
+            a(href="/goals/add") Create a goal?
+      
+      .dashboard-card.quick-actions
+        h2 Quick Actions
+        .action-buttons
+          a.btn.btn-primary(href="/tasks/add")
+            i.fas.fa-plus
+            span Add Task
+          a.btn.btn-primary(href="/goals/add")
+            i.fas.fa-plus
+            span Add Goal
+          a.btn.btn-outline(href="/tasks")
+            i.fas.fa-tasks
+            span All Tasks
+          a.btn.btn-outline(href="/goals")
+            i.fas.fa-bullseye
+            span All Goals
+

@@ -1,0 +1,21 @@
+extends ../layout
+
+block content
+  .content-header
+    h1 Edit Profile
+    a.btn.btn-outline(href="/profile")
+      i.fas.fa-arrow-left
+      span Back to Profile
+  
+  .form-container
+    form(action="/profile?_method=PUT", method="POST")
+      .form-group
+        label(for="name") Name
+        input#name.form-control(type="text", name="name", value=user.name, required)
+      
+      .form-group
+        label(for="email") Email
+        input#email.form-control(type="email", name="email", value=user.email, required)
+      
+      button.btn.btn-primary.btn-block(type="submit") Update Profile
+

@@ -1,0 +1,90 @@
+extends ../layout
+
+block content
+  .content-header
+    h1 Edit Goal
+    a.btn.btn-outline(href="/goals")
+      i.fas.fa-arrow-left
+      span Back to Goals
+
+  .form-container
+    form(action=`/goals/${goal._id}?_method=PUT`, method="POST")
+      .form-group
+        label(for="title") Goal Title *
+        input#title.form-control(type="text", name="title", value=goal.title, required)
+      
+      .form-group
+        label(for="description") Description
+        textarea#description.form-control(name="description")= goal.description
+      
+      .form-group
+        label Goal Type *
+        .radio-group
+          .radio-option
+            input#type-taskbased(type="radio", name="type", value="task-based", checked=goal.type === 'task-based')
+            label(for="type-taskbased") Task-based Goal
+          
+          .radio-option
+            input#type-onetime(type="radio", name="type", value="one-time", checked=goal.type === 'one-time')
+            label(for="type-onetime") One-time Goal
+      
+      #taskbased-fields.conditional-fields(class=goal.type !== 'task-based' ? 'hidden' : '')
+        .form-group
+          label(for="tasks") Related Tasks *
+          select#tasks.form-control(name="tasks", multiple, required=goal.type === 'task-based')
+            if tasks && tasks.length
+              each task in tasks
+                - const isSelected = goal.taskBasedDetails && goal.taskBasedDetails.tasks && goal.taskBasedDetails.tasks.some(t => t._id.toString() === task._id.toString())
+                option(value=task._id, selected=isSelected)= task.title
+            else
+              option(disabled) No available tasks
+          small.form-text Hold Ctrl/Cmd to select multiple tasks
+        
+        .form-group
+          label(for="targetDate") Target Date *
+          - const targetDate = goal.taskBasedDetails && goal.taskBasedDetails.targetDate ? new Date(goal.taskBasedDetails.targetDate).toISOString().split('T')[0] : ''
+          input#targetDate.form-control(type="date", name="targetDate", value=targetDate, required=goal.type === 'task-based')
+      
+      #onetime-fields.conditional-fields(class=goal.type !== 'one-time' ? 'hidden' : '')
+        .form-group
+          label(for="dueDate") Due Date *
+          - const dueDate = goal.dueDate ? new Date(goal.dueDate).toISOString().split('T')[0] : ''
+          input#dueDate.form-control(type="date", name="dueDate", value=dueDate, required=goal.type === 'one-time')
+      
+      button.btn.btn-primary.btn-block(type="submit") Update Goal
+
+block scripts
+  script.
+    // Show/hide conditional fields based on goal type
+    const taskbasedRadio = document.getElementById('type-taskbased');
+    const onetimeRadio = document.getElementById('type-onetime');
+    const taskbasedFields = document.getElementById('taskbased-fields');
+    const onetimeFields = document.getElementById('onetime-fields');
+    
+    function toggleFields() {
+      if (taskbasedRadio.checked) {
+        taskbasedFields.classList.remove('hidden');
+        onetimeFields.classList.add('hidden');
+        
+        // Make task-based fields required
+        document.getElementById('tasks').required = true;
+        document.getElementById('targetDate').required = true;
+        
+        // Make one-time fields not required
+        document.getElementById('dueDate').required = false;
+      } else {
+        taskbasedFields.classList.add('hidden');
+        onetimeFields.classList.remove('hidden');
+        
+        // Make task-based fields not required
+        document.getElementById('tasks').required = false;
+        document.getElementById('targetDate').required = false;
+        
+        // Make one-time fields required
+        document.getElementById('dueDate').required = true;
+      }
+    }
+    
+    taskbasedRadio.addEventListener('change', toggleFields);
+    onetimeRadio.addEventListener('change', toggleFields);
+

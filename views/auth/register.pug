@@ -1,0 +1,32 @@
+extends ../layout
+
+block content
+  .auth-container
+    .auth-card
+      h1.auth-title Register
+      p.auth-subtitle Create a new account to get started.
+      
+      form(action="/auth/register", method="POST")
+        .form-group
+          label(for="name") Name
+          input#name.form-control(type="text", name="name", placeholder="Enter your name", value=name || "", required)
+        
+        .form-group
+          label(for="email") Email
+          input#email.form-control(type="email", name="email", placeholder="Enter your email", value=email || "", required)
+        
+        .form-group
+          label(for="password") Password
+          input#password.form-control(type="password", name="password", placeholder="Create a password", required)
+          small.form-text Password must be at least 6 characters
+        
+        .form-group
+          label(for="password2") Confirm Password
+          input#password2.form-control(type="password", name="password2", placeholder="Confirm your password", required)
+        
+        button.btn.btn-primary.btn-block(type="submit") Register
+      
+      .auth-footer
+        p Already have an account? 
+          a(href="/auth/login") Login
+

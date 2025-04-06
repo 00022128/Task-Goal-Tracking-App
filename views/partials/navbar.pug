@@ -1,0 +1,36 @@
+nav.navbar
+  .navbar-brand
+    a(href="/") 
+      i.fas.fa-check-circle
+      span Task & Goal Tracker
+
+  .navbar-menu
+    if user
+      ul.navbar-nav
+        li.nav-item
+          a(href="/dashboard") Dashboard
+        li.nav-item
+          a(href="/tasks") Tasks
+        li.nav-item
+          a(href="/goals") Goals
+        li.nav-item.dropdown
+          a.dropdown-toggle(href="#", id="userDropdown")
+            - const avatar = user.avatar ? `/uploads/${user.avatar}` : '/uploads/default-avatar.png'
+
+            img.avatar-small(src=avatar, alt=user.name)
+
+            span #{user.name}
+          .dropdown-menu
+            a.dropdown-item(href="/profile") My Profile
+            a.dropdown-item(href="/profile/edit") Edit Profile
+            a.dropdown-item(href="/profile/change-avatar") Change Avatar
+            a.dropdown-item(href="/profile/change-password") Change Password
+            .dropdown-divider
+            a.dropdown-item(href="/auth/logout") Logout
+    else
+      ul.navbar-nav
+        li.nav-item
+          a(href="/auth/login") Login
+        li.nav-item
+          a(href="/auth/register") Register
+

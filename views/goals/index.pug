@@ -1,0 +1,120 @@
+extends ../layout
+
+block content
+  .content-header
+    h1 My Goals
+    a.btn.btn-primary(href="/goals/add")
+      i.fas.fa-plus
+      span Add Goal
+  
+  .tabs
+    button.tab-btn.active(data-tab="active") Active Goals
+    button.tab-btn(data-tab="completed") Completed Goals
+  
+  #active.tab-content.active
+    if activeGoals && activeGoals.length
+      .goal-grid
+        each goal in activeGoals
+          .goal-card
+            .goal-header
+              h3.goal-title= goal.title
+              .goal-actions
+                form(action=`/goals/${goal._id}/complete?_method=PATCH`, method="POST")
+                  button.btn.btn-icon(type="submit", title="Mark as complete")
+                    i.fas.fa-check-circle
+                a.btn.btn-icon(href=`/goals/edit/${goal._id}`, title="Edit goal")
+                  i.fas.fa-edit
+                form.delete-form(action=`/goals/${goal._id}?_method=DELETE`, method="POST")
+                  button.btn.btn-icon(type="submit", title="Delete goal")
+                    i.fas.fa-trash
+            
+            if goal.description
+              p.goal-description= goal.description
+            
+            .goal-meta
+              span.goal-type
+                i.fas(class=goal.type === 'task-based' ? 'fa-tasks' : 'fa-bullseye')
+                span= goal.type === 'task-based' ? 'Task-based Goal' : 'One-time Goal'
+              
+              if goal.type === 'task-based' && goal.taskBasedDetails.targetDate
+                span.goal-target
+                  i.fas.fa-calendar-check
+                  span Target: #{new Date(goal.taskBasedDetails.targetDate).toLocaleDateString()}
+              else if goal.dueDate
+                span.goal-due
+                  i.fas.fa-calendar
+                  span Due: #{new Date(goal.dueDate).toLocaleDateString()}
+            
+            if goal.type === 'task-based' && goal.taskBasedDetails.tasks && goal.taskBasedDetails.tasks.length
+              .goal-progress
+                - const taskCount = goal.taskBasedDetails.tasks.length
+                - const completedCount = goal.taskBasedDetails.tasks.filter(task => task.completed).length
+                - const progressPercent = taskCount > 0 ? Math.round((completedCount / taskCount) * 100) : 0
+                h4 Progress: #{completedCount}/#{taskCount} tasks (#{progressPercent}%)
+                .progress-bar
+                  .progress-fill(style=`width: ${progressPercent}%`)
+                
+                if taskCount > 0
+                  ul.goal-tasks
+                    each task in goal.taskBasedDetails.tasks
+                      li.goal-task(class=task.completed ? 'completed' : '')
+                        i.fas(class=task.completed ? 'fa-check-circle' : 'fa-circle')
+                        span= task.title
+    else
+      p.empty-state No active goals found. 
+        a(href="/goals/add") Create your first goal?
+  
+  #completed.tab-content
+    if completedGoals && completedGoals.length
+      .goal-grid
+        each goal in completedGoals
+          .goal-card.completed
+            .goal-header
+              h3.goal-title= goal.title
+              .goal-actions
+                form(action=`/goals/${goal._id}/complete?_method=PATCH`, method="POST")
+                  button.btn.btn-icon(type="submit", title="Mark as incomplete")
+                    i.fas.fa-times-circle
+                form.delete-form(action=`/goals/${goal._id}?_method=DELETE`, method="POST")
+                  button.btn.btn-icon(type="submit", title="Delete goal")
+                    i.fas.fa-trash
+            
+            if goal.description
+              p.goal-description= goal.description
+            
+            .goal-meta
+              span.goal-type
+                i.fas(class=goal.type === 'task-based' ? 'fa-tasks' : 'fa-bullseye')
+                span= goal.type === 'task-based' ? 'Task-based Goal' : 'One-time Goal'
+            
+            if goal.completedDate
+              .goal-completed
+                i.fas.fa-trophy
+                span Completed on #{new Date(goal.completedDate).toLocaleDateString()}
+    else
+      p.empty-state No completed goals yet.
+
+block scripts
+  script.
+    // Tab switching functionality
+    document.querySelectorAll('.tab-btn').forEach(button => {
+      button.addEventListener('click', () => {
+        // Remove active class from all buttons and content
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+        
+        // Add active class to clicked button and corresponding content
+        button.classList.add('active');
+        document.getElementById(button.dataset.tab).classList.add('active');
+      });
+    });
+    
+    // Confirm delete
+    document.querySelectorAll('.delete-form').forEach(form => {
+      form.addEventListener('submit', (e) => {
+        if (!confirm('Are you sure you want to delete this goal?')) {
+          e.preventDefault();
+        }
+      });
+    });
+

@@ -1,0 +1,122 @@
+extends ../layout
+
+block content
+  .content-header
+    h1 Edit Task
+    a.btn.btn-outline(href="/tasks")
+      i.fas.fa-arrow-left
+      span Back to Tasks
+
+  .form-container
+    form(action=`/tasks/${task._id}?_method=PUT`, method="POST")
+      .form-group
+        label(for="title") Task Title *
+        input#title.form-control(type="text", name="title", value=task.title, required)
+      
+      .form-group
+        label(for="description") Description
+        textarea#description.form-control(name="description")= task.description
+      
+      .form-group
+        label(for="category") Category *
+        select#category.form-control(name="category", required)
+          option(value="") Select a category
+          each category in categories
+            option(value=category, selected=task.category === category)= category.charAt(0).toUpperCase() + category.slice(1)
+      
+      .form-group
+        label Task Type *
+        .radio-group
+          .radio-option
+            input#type-routine(type="radio", name="type", value="routine", checked=task.type === 'routine')
+            label(for="type-routine") Routine Task
+          
+          .radio-option
+            input#type-onetime(type="radio", name="type", value="one-time", checked=task.type === 'one-time')
+            label(for="type-onetime") One-time Task
+      
+      #routine-fields.conditional-fields(class=task.type !== 'routine' ? 'hidden' : '')
+        .form-group
+          label(for="frequency") Frequency *
+          select#frequency.form-control(name="frequency", required=task.type === 'routine')
+            option(value="daily", selected=task.routineDetails && task.routineDetails.frequency === 'daily') Daily
+            option(value="weekly", selected=task.routineDetails && task.routineDetails.frequency === 'weekly') Weekly
+            option(value="monthly", selected=task.routineDetails && task.routineDetails.frequency === 'monthly') Monthly
+        
+        .form-group
+          label(for="time") Time to Complete *
+          input#time.form-control(type="time", name="time", value=task.routineDetails && task.routineDetails.time, required=task.type === 'routine')
+        
+        .form-group
+          label(for="days") Active Days
+          - const activeDays = task.routineDetails && task.routineDetails.days ? task.routineDetails.days : []
+          .checkbox-group
+            .checkbox-option
+              input#day-mon(type="checkbox", name="days", value="monday", checked=activeDays.includes('monday'))
+              label(for="day-mon") Monday
+            .checkbox-option
+              input#day-tue(type="checkbox", name="days", value="tuesday", checked=activeDays.includes('tuesday'))
+              label(for="day-tue") Tuesday
+            .checkbox-option
+              input#day-wed(type="checkbox", name="days", value="wednesday", checked=activeDays.includes('wednesday'))
+              label(for="day-wed") Wednesday
+            .checkbox-option
+              input#day-thu(type="checkbox", name="days", value="thursday", checked=activeDays.includes('thursday'))
+              label(for="day-thu") Thursday
+            .checkbox-option
+              input#day-fri(type="checkbox", name="days", value="friday", checked=activeDays.includes('friday'))
+              label(for="day-fri") Friday
+            .checkbox-option
+              input#day-sat(type="checkbox", name="days", value="saturday", checked=activeDays.includes('saturday'))
+              label(for="day-sat") Saturday
+            .checkbox-option
+              input#day-sun(type="checkbox", name="days", value="sunday", checked=activeDays.includes('sunday'))
+              label(for="day-sun") Sunday
+      
+      #onetime-fields.conditional-fields(class=task.type !== 'one-time' ? 'hidden' : '')
+        .form-group
+          label(for="dueDate") Due Date & Time *
+          - const dueDate = task.dueDate ? new Date(task.dueDate) : null
+          - const formattedDate = dueDate ? `${dueDate.getFullYear()}-${String(dueDate.getMonth() + 1).padStart(2, '0')}-${String(dueDate.getDate()).padStart(2, '0')}T${String(dueDate.getHours()).padStart(2, '0')}:${String(dueDate.getMinutes()).padStart(2, '0')}` : ''
+          input#dueDate.form-control(type="datetime-local", name="dueDate", value=formattedDate, required=task.type === 'one-time')
+      
+      button.btn.btn-primary.btn-block(type="submit") Update Task
+
+block scripts
+  script.
+    // Show/hide conditional fields based on task type
+    const routineRadio = document.getElementById('type-routine');
+    const onetimeRadio = document.getElementById('type-onetime');
+    const routineFields = document.getElementById('routine-fields');
+    const onetimeFields = document.getElementById('onetime-fields');
+    
+    function toggleFields() {
+      if (routineRadio.checked) {
+        routineFields.classList.remove('hidden');
+        onetimeFields.classList.add('hidden');
+        
+        // Make routine fields required
+        document.getElementById('frequency').required = true;
+        document.getElementById('time').required = true;
+        
+        // Make one-time fields not required
+        document.getElementById('dueDate').required = false;
+      } else {
+        routineFields.classList.add('hidden');
+        onetimeFields.classList.remove('hidden');
+        
+        // Make routine fields not required
+        document.getElementById('frequency').required = false;
+        document.getElementById('time').required = false;
+        
+        // Make one-time fields required
+        document.getElementById('dueDate').required = true;
+      }
+    }
+    
+    // Run once on page load
+    toggleFields();
+    
+    routineRadio.addEventListener('change', toggleFields);
+    onetimeRadio.addEventListener('change', toggleFields);
+

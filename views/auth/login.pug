@@ -1,0 +1,23 @@
+extends ../layout
+
+block content
+  .auth-container
+    .auth-card
+      h1.auth-title Login
+      p.auth-subtitle Welcome back! Please login to your account.
+      
+      form(action="/auth/login", method="POST")
+        .form-group
+          label(for="email") Email
+          input#email.form-control(type="email", name="email", placeholder="Enter your email", required)
+        
+        .form-group
+          label(for="password") Password
+          input#password.form-control(type="password", name="password", placeholder="Enter your password", required)
+        
+        button.btn.btn-primary.btn-block(type="submit") Login
+      
+      .auth-footer
+        p Don't have an account? 
+          a(href="/auth/register") Register
+

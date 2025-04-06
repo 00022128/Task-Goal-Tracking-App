@@ -1,0 +1,96 @@
+extends ../layout
+
+block content
+  .content-header
+    h1 Add New Goal
+    a.btn.btn-outline(href="/goals")
+      i.fas.fa-arrow-left
+      span Back to Goals
+
+  .form-container
+    form(action="/goals", method="POST")
+      .form-group
+        label(for="title") Goal Title *
+        input#title.form-control(type="text", name="title", placeholder="Enter goal title", required)
+      
+      .form-group
+        label(for="description") Description
+        textarea#description.form-control(name="description", placeholder="Enter goal description")
+      
+      .form-group
+        label Goal Type *
+        .radio-group
+          .radio-option
+            input#type-taskbased(type="radio", name="type", value="task-based", checked)
+            label(for="type-taskbased") Task-based Goal
+          
+          .radio-option
+            input#type-onetime(type="radio", name="type", value="one-time")
+            label(for="type-onetime") One-time Goal
+      
+      #taskbased-fields.conditional-fields
+        .form-group
+          label(for="tasks") Related Tasks *
+          select#tasks.form-control(name="tasks", multiple, required)
+            if tasks && tasks.length
+              each task in tasks
+                option(value=task._id)= task.title
+            else
+              option(disabled) No available tasks
+          small.form-text Hold Ctrl/Cmd to select multiple tasks
+        
+        .form-group
+          label(for="targetDate") Target Completion Date *
+          input#targetDate.form-control(type="date", name="targetDate", required)
+      
+      #onetime-fields.conditional-fields.hidden
+        .form-group
+          label(for="dueDate") Due Date *
+          input#dueDate.form-control(type="date", name="dueDate", required)
+      
+      button.btn.btn-primary.btn-block(type="submit") Add Goal
+
+block scripts
+  script.
+    // Show/hide conditional fields based on goal type
+    const taskbasedRadio = document.getElementById('type-taskbased');
+    const onetimeRadio = document.getElementById('type-onetime');
+    const taskbasedFields = document.getElementById('taskbased-fields');
+    const onetimeFields = document.getElementById('onetime-fields');
+    
+    function toggleFields() {
+      if (taskbasedRadio.checked) {
+        taskbasedFields.classList.remove('hidden');
+        onetimeFields.classList.add('hidden');
+        
+        // Make task-based fields required
+        document.getElementById('tasks').required = true;
+        document.getElementById('targetDate').required = true;
+        
+        // Make one-time fields not required
+        document.getElementById('dueDate').required = false;
+      } else {
+        taskbasedFields.classList.add('hidden');
+        onetimeFields.classList.remove('hidden');
+        
+        // Make task-based fields not required
+        document.getElementById('tasks').required = false;
+        document.getElementById('targetDate').required = false;
+        
+        // Make one-time fields required
+        document.getElementById('dueDate').required = true;
+      }
+    }
+    
+    taskbasedRadio.addEventListener('change', toggleFields);
+    onetimeRadio.addEventListener('change', toggleFields);
+    
+    // Set min date for date inputs to today
+    const dateInputs = document.querySelectorAll('input[type="date"]');
+    if (dateInputs.length) {
+      const today = new Date().toISOString().split('T')[0];
+      dateInputs.forEach(input => {
+        input.min = today;
+      });
+    }
+

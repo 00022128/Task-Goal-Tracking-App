@@ -1,0 +1,48 @@
+extends ../layout
+
+block content
+  .profile-container
+    .profile-header
+      .profile-avatar
+        img.avatar-large(src=`/uploads/${user.avatar}`, alt=user.name)
+      .profile-info
+        h1= user.name
+        p.profile-email= user.email
+        p.profile-date
+          i.fas.fa-calendar
+          span Member since #{new Date(user.registerDate).toLocaleDateString()}
+    
+    .profile-stats
+      .stat-card
+        .stat-value #{user.productivityScore}
+        .stat-label Productivity Score
+        .progress-bar
+          .progress-fill(style=`width: ${user.productivityScore}%`)
+      
+      .stat-card
+        .stat-value #{completedTaskCount}
+        .stat-label Tasks Completed
+        .stat-secondary #{taskCount} total tasks
+      
+      .stat-card
+        .stat-value #{completedGoalCount}
+        .stat-label Goals Achieved
+        .stat-secondary #{goalCount} total goals
+      
+      .stat-card
+        .stat-value #{daysSinceRegistration}
+        .stat-label Days Active
+    
+    .profile-actions
+      a.btn.btn-primary(href="/profile/edit")
+        i.fas.fa-user-edit
+        span Edit Profile
+      
+      a.btn.btn-outline(href="/profile/change-avatar")
+        i.fas.fa-camera
+        span Change Avatar
+      
+      a.btn.btn-outline(href="/profile/change-password")
+        i.fas.fa-key
+        span Change Password
+

@@ -1,0 +1,19 @@
+if success_msg && success_msg.length
+  .alert.alert-success
+    i.fas.fa-check-circle
+    span= success_msg
+    button.close(type="button") &times;
+
+if error_msg && error_msg.length
+  .alert.alert-danger
+    i.fas.fa-exclamation-circle
+    span= error_msg
+    button.close(type="button") &times;
+
+if errors && errors.length
+  each error in errors
+    .alert.alert-danger
+      i.fas.fa-exclamation-circle
+      span= error.msg
+      button.close(type="button") &times;
+

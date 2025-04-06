@@ -1,0 +1,22 @@
+extends ../layout
+
+block content
+  .content-header
+    h1 Change Avatar
+    a.btn.btn-outline(href="/profile")
+      i.fas.fa-arrow-left
+      span Back to Profile
+  
+  .form-container
+    .current-avatar
+      h3 Current Avatar
+      img.avatar-large(src=`/uploads/${user.avatar}`, alt=user.name)
+    
+    form(action="/profile/change-avatar", method="POST", enctype="multipart/form-data")
+      .form-group
+        label(for="avatar") Select New Avatar
+        input#avatar.form-control-file(type="file", name="avatar", accept="image/*", required)
+        small.form-text Supported formats: JPEG, PNG, GIF. Max size: 1MB
+      
+      button.btn.btn-primary.btn-block(type="submit") Upload Avatar
+

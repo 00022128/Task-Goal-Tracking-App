@@ -1,0 +1,132 @@
+extends ../layout
+
+block content
+  .content-header
+    h1 Add New Task
+    a.btn.btn-outline(href="/tasks")
+      i.fas.fa-arrow-left
+      span Back to Tasks
+
+  .form-container
+    form(action="/tasks", method="POST")
+      .form-group
+        label(for="title") Task Title *
+        input#title.form-control(type="text", name="title", placeholder="Enter task title", required)
+      
+      .form-group
+        label(for="description") Description
+        textarea#description.form-control(name="description", placeholder="Enter task description")
+      
+      .form-group
+        label(for="category") Category *
+        select#category.form-control(name="category", required)
+          option(value="") Select a category
+          each category in categories
+            option(value=category)= category.charAt(0).toUpperCase() + category.slice(1)
+      
+      .form-group
+        label Task Type *
+        .radio-group
+          .radio-option
+            input#type-routine(type="radio", name="type", value="routine", checked)
+            label(for="type-routine") Routine Task
+          
+          .radio-option
+            input#type-onetime(type="radio", name="type", value="one-time")
+            label(for="type-onetime") One-time Task
+      
+      #routine-fields.conditional-fields
+        .form-group
+          label(for="frequency") Frequency *
+          select#frequency.form-control(name="frequency")
+            option(value="daily") Daily
+            option(value="weekly") Weekly
+            option(value="monthly") Monthly
+        
+        .form-group
+          label(for="time") Time to Complete *
+          input#time.form-control(type="time", name="time")
+        
+        .form-group
+          label(for="days") Active Days
+          .checkbox-group
+            .checkbox-option
+              input#day-mon(type="checkbox", name="days", value="monday")
+              label(for="day-mon") Monday
+            .checkbox-option
+              input#day-tue(type="checkbox", name="days", value="tuesday")
+              label(for="day-tue") Tuesday
+            .checkbox-option
+              input#day-wed(type="checkbox", name="days", value="wednesday")
+              label(for="day-wed") Wednesday
+            .checkbox-option
+              input#day-thu(type="checkbox", name="days", value="thursday")
+              label(for="day-thu") Thursday
+            .checkbox-option
+              input#day-fri(type="checkbox", name="days", value="friday")
+              label(for="day-fri") Friday
+            .checkbox-option
+              input#day-sat(type="checkbox", name="days", value="saturday")
+              label(for="day-sat") Saturday
+            .checkbox-option
+              input#day-sun(type="checkbox", name="days", value="sunday")
+              label(for="day-sun") Sunday
+      
+      #onetime-fields.conditional-fields.hidden
+        .form-group
+          label(for="dueDate") Due Date & Time *
+          input#dueDate.form-control(type="datetime-local", name="dueDate")
+      
+      button.btn.btn-primary.btn-block(type="submit") Add Task
+
+block scripts
+  script.
+    // Show/hide conditional fields based on task type
+    const routineRadio = document.getElementById('type-routine');
+    const onetimeRadio = document.getElementById('type-onetime');
+    const routineFields = document.getElementById('routine-fields');
+    const onetimeFields = document.getElementById('onetime-fields');
+    
+    function toggleFields() {
+      if (routineRadio.checked) {
+        routineFields.classList.remove('hidden');
+        onetimeFields.classList.add('hidden');
+        
+        // Make routine fields required
+        document.getElementById('frequency').required = true;
+        document.getElementById('time').required = true;
+        
+        // Make one-time fields not required
+        document.getElementById('dueDate').required = false;
+      } else {
+        routineFields.classList.add('hidden');
+        onetimeFields.classList.remove('hidden');
+        
+        // Make routine fields not required
+        document.getElementById('frequency').required = false;
+        document.getElementById('time').required = false;
+        
+        // Make one-time fields required
+        document.getElementById('dueDate').required = true;
+      }
+    }
+    
+    // Run once on page load
+    toggleFields();
+    
+    routineRadio.addEventListener('change', toggleFields);
+    onetimeRadio.addEventListener('change', toggleFields);
+    
+    // Set min date for due date to today
+    const dueDateInput = document.getElementById('dueDate');
+    if (dueDateInput) {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      
+      dueDateInput.min = `${year}-${month}-${day}T${hours}:${minutes}`;
+    }
+
