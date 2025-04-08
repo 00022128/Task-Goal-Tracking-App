@@ -114,3 +114,7 @@ goal-tracker-app/
 - **Filter Goals by Deadline or Status**
 - **Flash Messaging and Error Handling**
 - **Responsive UI using Pug Templates**
+
+
+# NOTE
+Please note that, Render was used to host this web application on it's "free tier". For that reason, responses from the website might be delayed up to 50 seconds
